@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: food_delivery
+      POSTGRES_USER: food
+      POSTGRES_PASSWORD: food
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U food -d food_delivery"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    env_file: .env.example
+    environment:
+      DATABASE_URL: postgresql+psycopg2://food:food@postgres:5432/food_delivery
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: local-docker-secret-with-at-least-32-bytes
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  worker:
+    build: ./backend
+    command: ["python", "-m", "app.worker"]
+    env_file: .env.example
+    environment:
+      DATABASE_URL: postgresql+psycopg2://food:food@postgres:5432/food_delivery
+      JWT_SECRET: local-docker-secret-with-at-least-32-bytes
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000/api/v1
+    ports:
+      - "5173:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
