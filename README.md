@@ -1,4 +1,4 @@
-# Zomato-like Food Delivery App
+# Food Delivery App
 
 A complete end-to-end starter for a food delivery system with backend APIs, database schema, role-based auth, cart, checkout, order lifecycle, delivery assignment, outbox worker, Docker Compose, React UI, and automated tests.
 
