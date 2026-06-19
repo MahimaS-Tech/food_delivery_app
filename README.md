@@ -2,7 +2,7 @@
 
 A complete end-to-end starter for a food delivery system with backend APIs, database schema, role-based auth, cart, checkout, order lifecycle, delivery assignment, outbox worker, Docker Compose, React UI, and automated tests.
 
-This is **not** a full Zomato production system, but it is structured like a scalable production starter that you can extend into microservices.
+This is **not** a full production system, but it is structured like a scalable production starter that you can extend into microservices.
 
 ## Tech stack
 
@@ -135,4 +135,4 @@ load-tests/
 
 ## Production notes
 
-For serious Zomato-scale production, split the bounded contexts into services: catalog/search, cart, order, payment, delivery, notification, identity, reviews, and promotions. Keep the idempotency/outbox patterns, add Kafka or another durable broker, use Redis cluster, Postgres read replicas or sharded databases, object storage/CDN for images, and a search/geo index such as OpenSearch/PostGIS.
+For serious large-scale production, split the bounded contexts into services: catalog/search, cart, order, payment, delivery, notification, identity, reviews, and promotions. Keep the idempotency/outbox patterns, add Kafka or another durable broker, use Redis cluster, Postgres read replicas or sharded databases, object storage/CDN for images, and a search/geo index such as OpenSearch/PostGIS.
